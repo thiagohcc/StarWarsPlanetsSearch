@@ -12,8 +12,7 @@ export default function Table() {
     { query: '',
       columnFilter: 'population',
       comparisonFilter: 'maior que',
-      valueFilter: 0,
-    },
+      valueFilter: 0 },
   );
   const [filters, setFilters] = useState(
     {
@@ -23,8 +22,7 @@ export default function Table() {
       diameter: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
       rotation: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
       rotation_period: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      surface_water: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-    },
+      surface_water: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 } },
   );
   const handleChange = ({ target }) => {
     setSearching({
@@ -145,7 +143,6 @@ export default function Table() {
                   planetsList
                     .filter((planet) => planet.name.includes(searching.query))
                     .filter((planet) => planet.name.includes(filters.query))
-                    // Filtros baseados nos valores de population
                     .filter((planet) => (
                       filters.population.maior_que >= 0
                         ? planet.population > filters.population.maior_que
@@ -160,7 +157,6 @@ export default function Table() {
                       filters.population.igual_a > 0
                         ? parseInt(planet.population, 10) === filters.population.igual_a
                         : planet.population > 0 || planet.population === 'unknown'))
-                    // Filtros baseados nos valores de orbital_period
                     .filter((planet) => (
                       filters.orbital_period.maior_que >= 0
                         ? planet.orbital_period > filters.orbital_period.maior_que
@@ -177,7 +173,6 @@ export default function Table() {
                           === filters.orbital_period.igual_a
                         : planet.orbital_period > 0 || planet.orbital_period === 'unknown'
                     ))
-                    // // Filtros baseados nos valores de diameter
                     .filter((planet) => (
                       filters.diameter.maior_que >= 0
                         ? planet.diameter > filters.diameter.maior_que
@@ -194,7 +189,6 @@ export default function Table() {
                           === filters.diameter.igual_a
                         : planet.diameter > 0 || planet.diameter === 'unknown'
                     ))
-                    // Filtros baseados nos valores de rotation_period
                     .filter((planet) => (
                       filters.rotation_period.maior_que >= 0
                         ? planet.rotation_period > filters.rotation_period.maior_que
@@ -212,7 +206,6 @@ export default function Table() {
                         : planet.rotation_period > 0
                           || planet.rotation_period === 'unknown'
                     ))
-                    // Filtros baseados nos valores de surface_water
                     .filter((planet) => (
                       filters.surface_water.maior_que >= 0
                         ? planet.surface_water > filters.surface_water.maior_que
