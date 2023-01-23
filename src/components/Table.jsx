@@ -1,29 +1,19 @@
-import React, { useContext, useState } from 'react';
-import PlanetsContext from '../context/PlanetsContext';
+import React, { useContext } from 'react';
 
-const COLUMN_FILTER_OPTIONS = [
-  'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'];
-const OPERATOR_OPTIONS = ['maior que', 'menor que', 'igual a'];
+import PlanetsContext from '../context/PlanetsContext';
+import ButtonFilter from './ButtonFilter';
+import ColumnDropDown from './ColumnDropDown';
+import NumberInput from './NumberInput';
+import OperatorDropDown from './OperatorDropDown';
+import QueryInput from './QueryInput';
+
 const DEFAULT_COMPARISON_SURFACE_WATER = -1;
 
 export default function Table() {
-  const { loading, planetsList, headers } = useContext(PlanetsContext);
-  const [searching, setSearching] = useState(
-    { query: '',
-      columnFilter: 'population',
-      comparisonFilter: 'maior que',
-      valueFilter: 0 },
-  );
-  const [filters, setFilters] = useState(
-    {
-      query: '',
-      population: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      orbital_period: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      diameter: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      rotation: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      rotation_period: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      surface_water: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 } },
-  );
+  const { loading, planetsList, headers, searching, setSearching, filters, setFilters,
+    columnsFilterOptions, setColumnsFilterOptions,
+  } = useContext(PlanetsContext);
+
   const handleChange = ({ target }) => {
     setSearching({
       ...searching,
@@ -50,6 +40,18 @@ export default function Table() {
           [searching.comparisonFilter.replace(' ', '_')]:
             parseInt(searching.valueFilter, 10) },
     }));
+
+    const newColumns = columnsFilterOptions.map((objeto) => {
+      if (objeto.name === searching.columnFilter) {
+        objeto.active = false;
+      }
+      return objeto;
+    });
+    setSearching({
+      ...searching,
+      columnFilter: columnsFilterOptions.find((column) => (column.active === true)).name,
+    });
+    setColumnsFilterOptions(newColumns);
   };
 
   return (
@@ -58,77 +60,23 @@ export default function Table() {
         loading ? 'loading...' : (
           <div>
             <section>
-              <input
-                type="text"
-                name="query"
-                data-testid="name-filter"
-                onChange={ handleChange }
-                onKeyDown={ handleTextFilter }
-                value={ searching.query }
-              />
-              <div>
-                <div>
-                  <div>Coluna:</div>
-                  <select
-                    name="columnFilter"
-                    data-testid="column-filter"
-                    onChange={ handleChange }
-                  >
-                    {
-                      COLUMN_FILTER_OPTIONS.map((option) => (
-                        <option
-                          key={ option }
-                          name={ option }
-                          value={ option }
-                        >
-                          { option }
-                        </option>
-                      ))
-                    }
-                  </select>
-                </div>
-                <div>
-                  <div>Operador:</div>
-                  <select
-                    name="comparisonFilter"
-                    data-testid="comparison-filter"
-                    onChange={ handleChange }
-                  >
-                    {
-                      OPERATOR_OPTIONS.map((operator) => (
-                        <option
-                          key={ operator }
-                          name={ operator }
-                          value={ operator }
-                        >
-                          { operator }
-                        </option>
-                      ))
-                    }
-                  </select>
-                  <input
-                    type="number"
-                    name="valueFilter"
-                    data-testid="value-filter"
-                    onChange={ handleChange }
-                    value={ searching.valueFilter }
-                  />
-                  <button
-                    type="button"
-                    data-testid="button-filter"
-                    onClick={ handleValuesFilter }
-                  >
-                    FILTRAR
-                  </button>
-                </div>
-              </div>
-              <div>
+              <section>
+                <QueryInput
+                  handleChange={ handleChange }
+                  handleTextFilter={ handleTextFilter }
+                />
+                <ColumnDropDown handleChange={ handleChange } />
+                <OperatorDropDown handleChange={ handleChange } />
+                <NumberInput handleChange={ handleChange } />
+                <ButtonFilter handleValuesFilter={ handleValuesFilter } />
+              </section>
+              <section>
                 {
                   Object.keys(filters).map((key, value, index) => (
                     <div key={ index }>{ key }</div>
                   ))
                 }
-              </div>
+              </section>
             </section>
             <section>
               <table>
