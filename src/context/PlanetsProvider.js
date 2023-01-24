@@ -24,13 +24,20 @@ export default function PlanetsProvider({ children }) {
   );
   const [filters, setFilters] = useState(
     {
-      query: '',
-      population: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      orbital_period: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      diameter: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      rotation: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      rotation_period: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 },
-      surface_water: { maior_que: -Infinity, menor_que: Infinity, igual_a: 0 } },
+      query:
+        { query: '', active: false },
+      population:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+      orbital_period:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+      diameter:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+      rotation:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+      rotation_period:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+      surface_water:
+        { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false } },
   );
 
   const returnFetch = async () => {

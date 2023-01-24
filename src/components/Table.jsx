@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 
 import PlanetsContext from '../context/PlanetsContext';
 import ButtonFilter from './ButtonFilter';
+import ButtonRemoveFilters from './ButtonRemoveFilters';
+import ButtonShowFilter from './ButtonShowFilter';
 import ColumnDropDown from './ColumnDropDown';
 import NumberInput from './NumberInput';
 import OperatorDropDown from './OperatorDropDown';
@@ -20,17 +22,22 @@ export default function Table() {
       [target.name]: target.value,
     });
   };
+
   const handleTextFilter = (event) => {
     if (event.key === 'Enter') {
       setFilters({
         ...filters,
-        [event.target.name]: event.target.value,
+        [event.target.name]: {
+          ...event.target.name,
+          [event.target.name]: event.target.value,
+        },
       });
       setSearching({
         query: '',
       });
     }
   };
+
   const handleValuesFilter = () => {
     setFilters((prevState) => ({
       ...filters,
@@ -38,7 +45,8 @@ export default function Table() {
         {
           ...prevState[searching.columnFilter],
           [searching.comparisonFilter.replace(' ', '_')]:
-            parseInt(searching.valueFilter, 10) },
+            parseInt(searching.valueFilter, 10),
+          active: true },
     }));
 
     const newColumns = columnsFilterOptions.map((objeto) => {
@@ -52,6 +60,43 @@ export default function Table() {
       columnFilter: columnsFilterOptions.find((column) => (column.active === true)).name,
     });
     setColumnsFilterOptions(newColumns);
+  };
+
+  const removeAllFilters = () => {
+    setFilters(
+      {
+        query:
+          { query: '', active: false },
+        population:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+        orbital_period:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+        diameter:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+        rotation:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+        rotation_period:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false },
+        surface_water:
+          { maior_que: -Infinity, menor_que: Infinity, igual_a: 0, active: false } },
+    );
+  };
+
+  const removeUniqueFilter = ({ target }) => {
+    setFilters({
+      ...filters,
+      [target.name]: {
+        maior_que: -Infinity,
+        menor_que: Infinity,
+        igual_a: 0,
+        active: false,
+      },
+    });
+
+    setColumnsFilterOptions([
+      ...columnsFilterOptions,
+      { name: target.name, active: true },
+    ]);
   };
 
   return (
@@ -71,11 +116,8 @@ export default function Table() {
                 <ButtonFilter handleValuesFilter={ handleValuesFilter } />
               </section>
               <section>
-                {
-                  Object.keys(filters).map((key, value, index) => (
-                    <div key={ index }>{ key }</div>
-                  ))
-                }
+                <ButtonShowFilter removeUniqueFilter={ removeUniqueFilter } />
+                <ButtonRemoveFilters removeAllFilters={ removeAllFilters } />
               </section>
             </section>
             <section>
@@ -90,7 +132,7 @@ export default function Table() {
                 {
                   planetsList
                     .filter((planet) => planet.name.includes(searching.query))
-                    .filter((planet) => planet.name.includes(filters.query))
+                    .filter((planet) => planet.name.includes(filters.query.query))
                     .filter((planet) => (
                       filters.population.maior_que >= 0
                         ? planet.population > filters.population.maior_que
