@@ -41,9 +41,30 @@ describe('Test the App', () => {
     userEvent.type(inputQuery, 'Tatooine');
     expect(inputQuery).toHaveValue('Tatooine');
     expect(screen.getByRole('cell', { name: /tatooine/i }))
-  
-  
-  
+  });
+
+  test('If the filters work', async () => {
+    await act(() => render(<App />));
+
+    const columns = screen.getByTestId('column-filter');
+    const operators = screen.getByTestId('comparison-filter');
+    const values = screen.getByRole('spinbutton');
+    const filterBtn = screen.getByRole('button', { name: /filtra/i});
+
+    act(() => {
+      userEvent.selectOptions(columns, 'orbital_period');
+      userEvent.selectOptions(operators, 'menor que');
+      userEvent.type(values, '305');
+      userEvent.click(filterBtn);
+    })
+
+    await waitFor(() => {
+      const filteredPlanets = screen.getAllByTestId('planet');
+      expect(filteredPlanets).toHaveLength(1);
+
+    })
+
+
   });
 
 })
